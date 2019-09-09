@@ -43,20 +43,29 @@ function promptUser(){
                 message: 'What product would you like to buy?'
             },
             {
-                type: 'number',
+                type: 'input',
                 name: 'unitsToPurchase',
                 message: 'How many units would you like to purchase?'
             }
         ]).then(function(answer) {
             // is the unitsToPurchase less than the stock_quantity? Yes then you are good to go!
             // descontruct variable
-            const { productName, unitsToPurchase } = answer
+            const { productName, unitsToPurchase } = answer;
+           
             // read quantity value from database
             connection.query('SELECT DISTINCT stock_quantity FROM products WHERE product_name = ?', [productName], function(err, res) { 
                     if (err) throw err;
 
-                    var stockReturned = res[0].stock_quantity
+                    // store the stock returned
+                    var stockReturned = res[0].stock_quantity;
                     console.log('Stock Returned: ' + stockReturned)
+
+                    // make units to purchase a number
+                    var unitsToInt = Number(unitsToPurchase);
+
+                    // find the delta between the units wanted and the amount in stock
+                    var stockDelta = stockReturned - unitsToInt;
+                    console.log('Stock Delta: ' + stockDelta);
 
                     // if the desired amount to purchase is not less than the amount in stock throw an error message
                     if (unitsToPurchase > stockReturned) {
@@ -66,33 +75,31 @@ function promptUser(){
                     // if the desired amount to purchase is less than the amount in stock then continue with the purchase
                     } else {
                         // subtract the desired amount from the stock_quantity value
-                        function updateProductQuantity(stockReturned, unitsToPurchase, productName) {
-                            // make unitsToPurchase an integer
-                            var unitsToInt = number(unitsToPurchase,10);
-                            var stocktoInt= number(stockReturned,10);
-                            console.log(unitsToInt);
-                            console.log(stocktoInt);
-
-                            // subtract unitsToPurchase from results
-                            var stockDelta = stocktoInt - unitsToInt;
-                             console.log('Stock Delta: ' + stockDelta);
+                  
+                        // create sql query
+                        var sql = 'UPDATE products SET ? WHERE ?';
+                        // update table with the delta after the purchase
+                        connection.query(sql, [
+                            {
+                              stock_quantity: stockDelta
+                            },
+                            {
+                                product_name: answer.productName
+                            }
+                            ],
+                            function(err, res) {
+                            if (err) throw err;
+                            console.log(res.affectedRows + " products updated!\n");
+                            })
+                          
                         
-                    //         // update table with the delta after the purchase
-                    //         connection.query('UPDATE products SET ? WHERE ?', [
-                    //             {
-                    //                 stock_quantity: stockDelta
-                    //             },
-                    //             {
-                    //                 product_name: productName
-                    //             }
-                    //         ],
-                    //         function(err, res) {
-                    //         if (err) throw err;
-                    //         console.log(res.affectedRows + " products updated!\n");
-                    //         })
-                        } updateProductQuantity();
 
-                    //     // show full price of the user's purchase
+                         
+                          //  read the cost of the product
+                          // make sure the cost is a number
+                          // multiple the unitsToInt by the cost
+                          // return the cost
+                         
                     }
 
                 })
