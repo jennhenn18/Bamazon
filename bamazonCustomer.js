@@ -36,73 +36,73 @@ function showTable() {
 
 // Once the table has loaded prompt the user to select what product they would like to purchase and how many units they want to purchase
 function promptUser(){
-    inquirer.prompt ([
-            {
-                type: 'input',
-                name: 'productName',
-                message: 'What product would you like to buy?'
-            },
-            {
-                type: 'input',
-                name: 'unitsToPurchase',
-                message: 'How many units would you like to purchase?'
+  inquirer.prompt ([
+          {
+              type: 'input',
+              name: 'productName',
+              message: 'What product would you like to buy?'
+          },
+          {
+              type: 'input',
+              name: 'unitsToPurchase',
+              message: 'How many units would you like to purchase?'
+          }
+      ]).then(function(answer) {
+          // run update quantity function
+          updateQuantity(answer);
+      });
+}
+
+// create function to update the Quantity
+
+function updateQuantity(answer) {
+      // descontruct variable
+      const { productName, unitsToPurchase } = answer;
+      
+      // read quantity value from database
+      connection.query('SELECT DISTINCT stock_quantity FROM products WHERE product_name = ?', [productName], function(err, res) { 
+          if (err) throw err;
+
+          // store the stock returned
+          var stockReturned = res[0].stock_quantity;
+          console.log('Stock Returned: ' + stockReturned)
+
+          // make units to purchase a number
+          var unitsToInt = Number(unitsToPurchase);
+
+          // find the delta between the units wanted and the amount in stock
+          var stockDelta = stockReturned - unitsToInt;
+          console.log('Stock Delta: ' + stockDelta);
+
+          // if the desired amount to purchase is not less than the amount in stock throw an error message
+          if (unitsToPurchase > stockReturned) {
+              console.log('Insufficient quantity!');
+              return
+          
+          // if the desired amount to purchase is less than the amount in stock then continue with the purchase
+          } else {
+              // subtract the desired amount from the stock_quantity value
+
+              // create sql query
+              var sql = 'UPDATE products SET ? WHERE ?';
+              // update table with the delta after the purchase
+              connection.query(sql, [
+                  {
+                    stock_quantity: stockDelta
+                  },
+                  {
+                      product_name: answer.productName
+                  }
+                  ],
+                  function(err, res) {
+                  if (err) throw err;
+                  console.log(res.affectedRows + " products updated!\n");
+                  // showTotalCost(answer);
+                  })  
             }
-        ]).then(function(answer) {
-            // is the unitsToPurchase less than the stock_quantity? Yes then you are good to go!
-            // descontruct variable
-            const { productName, unitsToPurchase } = answer;
-           
-            // read quantity value from database
-            connection.query('SELECT DISTINCT stock_quantity FROM products WHERE product_name = ?', [productName], function(err, res) { 
-                    if (err) throw err;
-
-                    // store the stock returned
-                    var stockReturned = res[0].stock_quantity;
-                    console.log('Stock Returned: ' + stockReturned)
-
-                    // make units to purchase a number
-                    var unitsToInt = Number(unitsToPurchase);
-
-                    // find the delta between the units wanted and the amount in stock
-                    var stockDelta = stockReturned - unitsToInt;
-                    console.log('Stock Delta: ' + stockDelta);
-
-                    // if the desired amount to purchase is not less than the amount in stock throw an error message
-                    if (unitsToPurchase > stockReturned) {
-                        console.log('Insufficient quantity!');
-                        return
-                    
-                    // if the desired amount to purchase is less than the amount in stock then continue with the purchase
-                    } else {
-                        // subtract the desired amount from the stock_quantity value
-                  
-                        // create sql query
-                        var sql = 'UPDATE products SET ? WHERE ?';
-                        // update table with the delta after the purchase
-                        connection.query(sql, [
-                            {
-                              stock_quantity: stockDelta
-                            },
-                            {
-                                product_name: answer.productName
-                            }
-                            ],
-                            function(err, res) {
-                            if (err) throw err;
-                            console.log(res.affectedRows + " products updated!\n");
-                            })
-                          
-                        
-
-                         
-                          //  read the cost of the product
-                          // make sure the cost is a number
-                          // multiple the unitsToInt by the cost
-                          // return the cost
-                         
-                    }
-
-                })
         })
 }
+
+// create a function to show the total cost
+
 
