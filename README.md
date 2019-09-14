@@ -14,7 +14,7 @@ Welcome to the Bamazon store! This application offers two workflow scenarios: 1)
 8) Follow the prompts to interact with the table data
 
 ### Customer scenario demo
-This [video]() will walk-through the customer scenario for Bamazon.
+Download this [video](https://github.com/jennhenn18/Bamazon/blob/master/assets/customerworkflow.mp4) to see a walk-through of the customer scenario for Bamazon.
 
 ## Getting started for managers
 
@@ -28,7 +28,7 @@ This [video]() will walk-through the customer scenario for Bamazon.
 8) Follow the prompts to interact with the table data
 
 ### Manager scenario demo
-This [video]() will walk-through the manager scenario for Bamazon.
+Downalod this [video](https://github.com/jennhenn18/Bamazon/blob/master/assets/managerworkflow.mp4) to see a walk-through of the manager scenario for Bamazon.
 
 
 ## Technologies used
