@@ -97,12 +97,24 @@ function updateQuantity(answer) {
                   function(err, res) {
                   if (err) throw err;
                   console.log(res.affectedRows + " products updated!\n");
-                  // showTotalCost(answer);
+                  showTotalCost(productName, unitsToInt);
                   })  
             }
         })
 }
 
 // create a function to show the total cost
+function showTotalCost(productName, unitsToInt) {
 
+  // get the cost of the item from the table
+   connection.query('SELECT DISTINCT price FROM products WHERE product_name = ?', [productName], function(err, res) { 
+    if (err) throw err;
 
+    // create a variable that contains the price of the item
+    var itemCost = res[0].price;
+
+    // multiple the item cost by the units to purchase
+    var totalCost = itemCost*unitsToInt;
+    console.log("The total cost of your purchase is: " + totalCost);
+  })
+}
