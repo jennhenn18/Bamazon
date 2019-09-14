@@ -62,8 +62,8 @@ function promptUser(){
                 addInventory();
                 break;
             // if user chooses to add a new product run function
-            case 'Add more inventory to a product':
-                // addNewProduct();
+            case 'Add a new product':
+                addNewProduct();
                 break;
             case 'exit':
                 connection.end();
@@ -157,3 +157,64 @@ function addInventory() {
         })
     }
 }
+
+// create a function so the manager can add a new product to the table
+function addNewProduct() {
+    // user needs to input a product name, department name, price, and stock quantity
+    inquirer.prompt ([
+        {
+            type: 'input',
+            name: 'newProductName',
+            message: 'Enter the product name'
+        },
+        {
+            type: 'input',
+            name: 'newDepartmentName',
+            message: 'Enter the name of the department where the product should be stored'
+        },
+        {
+            type: 'input',
+            name: 'newPrice',
+            message: 'Enter the price of the product'
+        },
+        {
+            type: 'input',
+            name: 'newStockQuantity',
+            message: 'Enter the starting stock quantity for the product'
+        }
+    ]).then(function(answer){
+        // update table with the new product information
+        console.log(answer.newProductName);
+        console.log(answer.newDepartmentName);
+        
+
+        // make price a INT to store into the SQL table
+        var price = Number(answer.newPrice);
+        console.log(price);
+        
+
+        // make the stock quantity a INT to store into the SQL table
+        var stockQuantity = Number(answer.newStockQuantity);
+        console.log(stockQuantity);
+
+        // create sql query
+        var sql = 'INSERT INTO products SET ?';
+        // add new product to the table
+        connection.query(sql,
+            {
+                product_name: answer.newProductName,
+                department_name: answer.newDepartmentName,
+                price: price,
+                stock_quantity: stockQuantity
+            },
+            function(err, res) {
+                if (err) throw err;
+                // show updated message
+                console.log(res.affectedRows + " new product added!\n")
+                // show new table
+                showTable();
+            });
+    })
+}
+
+// 
