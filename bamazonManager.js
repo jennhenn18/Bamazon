@@ -20,19 +20,8 @@ var connection = mysql.createConnection({
   connection.connect(function(err) {
     if (err) throw err;
     console.log("connected as id " + connection.threadId + "\n");
-    showTable();
-  });
-
-//   creation function to print table of product data
-
-function showTable() {
-    // select * from products will select everything in the table products
-  connection.query("SELECT * FROM products", function(err, res) {
-    if (err) throw err;
-    console.table(res);
     promptUser();
   });
-}
 
 // Once the table has loaded prompt the user to select what product they would like to purchase and how many units they want to purchase
 function promptUser(){
@@ -75,6 +64,17 @@ function promptUser(){
                 break;
           }
       });
+}
+
+// create a function to print table of product data
+
+function showTable() {
+    // select * from products will select everything in the table products
+  connection.query("SELECT * FROM products", function(err, res) {
+    if (err) throw err;
+    console.table(res);
+    promptUser();
+  });
 }
 
 // create a function that displays all products with a stock_quanity less than or equal to 5

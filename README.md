@@ -1,6 +1,6 @@
 # Bamazon
 
-Welcome to the Bamazon store! This application offers to workflow scenarios: 1) customers or 2) managers. See the getting started steps below for the different scenarios.
+Welcome to the Bamazon store! This application offers two workflow scenarios: 1) customers or 2) managers. See the getting started steps below for the different scenarios.
 
 ## Getting started for customers
 
@@ -31,7 +31,7 @@ This [video]() will walk-through the customer scenario for Bamazon.
 This [video]() will walk-through the manager scenario for Bamazon.
 
 
-### Technologies used
+## Technologies used
 
 For the creation of Bamazon I used the following technologies:
 - **NodeJS**
@@ -41,4 +41,4 @@ For the creation of Bamazon I used the following technologies:
 - **Database**:
     - [MYSQL](https://www.mysql.com/)
 
-*Deployed site [here](https://jennhenn18.github.io/liri-node-app/)*
+*Deployed site [here](https://jennhenn18.github.io/Bamazon/)*
