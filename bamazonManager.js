@@ -59,7 +59,7 @@ function promptUser(){
                 break;
             // if user chooses to add more invetory to a product run function
             case 'Add more inventory to a product':
-                // addInventory();
+                addInventory();
                 break;
             // if user chooses to add a new product run function
             case 'Add more inventory to a product':
@@ -79,4 +79,81 @@ function viewLowInventory() {
         if (err) throw err;
         console.table(res)
     })
+    inquirer.prompt([
+        {
+            type: 'addInventory',
+            name: 'addInventory',
+            message: 'Would you like to add inventory to one of these items? (Y or N)' 
+        }
+    ]).then(function(answer) {
+        switch (answer.addInventory) {
+            // if Y then run add Invetory function
+            case 'Y':
+                addInventory();
+                break;
+            // if N then exit
+            case 'N':
+                connection.end()
+                break;
+        }
+    })
+}
+
+// create a function that allows the manager to add invetory to a product
+function addInventory() {
+    // show the table again to the manager
+    connection.query("SELECT * FROM products", function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        selectProductToAddInv();
+    })
+    function selectProductToAddInv() {
+        inquirer.prompt ([
+            {
+                type: 'input',
+                name: 'inventoryProduct',
+                message: 'Entering the product name in the table, which product would you like to add inventory to?'
+            },
+            {
+                type: 'input',
+                name: 'numItemsToAdd',
+                message: 'How much inventory would you like to add?'
+            }
+        ]).then(function(answer) {
+            const { inventoryProduct, numItemsToAdd } = answer;
+
+            // run a query on that reads the amount stock currently for the product the user entered
+            connection.query('SELECT DISTINCT stock_quantity FROM products WHERE product_name = ?', [inventoryProduct], function(err, res) { if (err) throw err;
+
+            // store the stock returned
+            var currentStock = res[0].stock_quantity;
+
+            // make units to add a number
+            var stockToAdd = Number(numItemsToAdd);
+
+            // using the input they gave, add that number to the current stock
+            var newStock = currentStock + stockToAdd;
+            console.log('new stock: ' + newStock);
+
+            // put that new stock amount into the table
+            var sql = 'UPDATE products SET ? WHERE ?';
+                // update table with the new stock
+                connection.query(sql, [
+                    {
+                        stock_quantity: newStock
+                    },
+                    {
+                        product_name: inventoryProduct
+                    }
+                    ],
+                    function(err, res) {
+                        if (err) throw err;
+                        // show updated message
+                        console.log(res.affectedRows + " products updated!\n")
+                        // show new table
+                        showTable();
+                    })
+                })
+        })
+    }
 }
