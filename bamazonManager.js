@@ -45,7 +45,8 @@ function promptUser(){
                 'View all products', 
                 'View low invetory products', 
                 'Add more inventory to a product', 
-                'Add a new product']
+                'Add a new product',
+                'Remove a product']
           }
       ]).then(function(answer) {
           switch (answer.managerOptions) {
@@ -64,6 +65,10 @@ function promptUser(){
             // if user chooses to add a new product run function
             case 'Add a new product':
                 addNewProduct();
+                break;
+            // if user chooses to remove a product run function
+            case 'Remove a product':
+                removeProduct();
                 break;
             case 'exit':
                 connection.end();
@@ -217,4 +222,27 @@ function addNewProduct() {
     })
 }
 
-// 
+// create a function to delete a product from the table
+function removeProduct() {
+    // run to prompt to identify what product to delete
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'removeProduct',
+            message: 'Enter name of product to remove from stock'
+        }
+    ]).then(function(answer){
+        // run query to remove product identified
+        connection.query('DELETE FROM products WHERE ?',
+        {
+            product_name: answer.removeProduct
+        },
+        function(err, res) {
+            if (err) throw err;
+            // show removed confirmation message
+            console.log(res.affectedRows + 'products deleted!\n');
+            // display updated table
+            showTable();
+        })   
+    })
+}
